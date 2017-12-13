@@ -1,0 +1,23 @@
+{
+    "name": "super-mario-javascript",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "serve ./public",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jacknehme/super-mario-javascript.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/jacknehme/super-mario-javascript/issues"
+    },
+    "homepage": "https://github.com/jacknehme/super-mario-javascript#readme",
+    "dependencies": {
+        "serve": "^6.4.1"
+    }
+}
