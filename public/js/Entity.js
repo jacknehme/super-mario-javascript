@@ -2,7 +2,7 @@ import { Vec2 } from './math.js';
 
 export class Trait {
     constructor(name) {
-        this.name = name;
+        this.NAME = name;
     }
 
     update() {
