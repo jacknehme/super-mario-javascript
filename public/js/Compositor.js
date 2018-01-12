@@ -1,3 +1,5 @@
+import { createCollisionLayer } from './layers.js';
+
 export default class Compositor {
     constructor() {
         this.layers = [];

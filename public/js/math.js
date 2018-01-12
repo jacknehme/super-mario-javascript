@@ -11,6 +11,10 @@ export class Matrix {
         });
     }
 
+    clear() {
+        this.grid.length = 0;
+    }
+
     get(x, y) {
         const col = this.grid[x];
         if (col) {
@@ -26,8 +30,6 @@ export class Matrix {
         this.grid[x][y] = value;
     }
 }
-
-window.Matrix = Matrix;
 
 export class Vec2 {
     constructor(x, y) {
