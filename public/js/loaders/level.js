@@ -1,3 +1,4 @@
+import { Matrix } from '../math.js';
 import Level from '../Level.js';
 import { createBackgroundLayer, createSpriteLayer } from '../layers.js';
 import { loadJSON, loadSpriteSheet } from '../loaders.js';
@@ -8,19 +9,50 @@ export function loadLevel(name) {
             levelSpec,
             loadSpriteSheet(levelSpec.spriteSheet),
         ]))
-        .then(([levelSpec, tilesprites]) => {
+        .then(([levelSpec, backgroundSprites]) => {
             const level = new Level();
 
-            createTiles(level, levelSpec.tiles, levelSpec.patterns);
+            const mergeTiles = levelSpec.layers.reduce((mergedTiles, layerSpec) => {
+                return mergedTiles.concat(layerSpec.tiles);
+            }, [])
+            const collisionGrid = createCollisionGrid(mergeTiles, levelSpec.patterns)
+            level.setCollisionGrid(collisionGrid);
 
-            const tileLayer = createBackgroundLayer(level, tilesprites);
-            level.comp.layers.push(tileLayer);
+            levelSpec.layers.forEach(layer => {
+                const backgroundGrid = createBackgroundGrid(layer.tiles, levelSpec.patterns)
+                const backgroundLayer = createBackgroundLayer(level, backgroundGrid, backgroundSprites);
+                level.comp.layers.push(backgroundLayer);
+            });
 
             const spriteLayer = createSpriteLayer(level.entities);
             level.comp.layers.push(spriteLayer);
 
             return level;
         });
+}
+
+function createCollisionGrid(tiles, patterns) {
+    const grid = new Matrix();
+
+    for (const { tile, x, y }
+        of expandTiles(tiles, patterns)) {
+        grid.set(x, y, {
+            type: tile.type,
+        });
+    }
+    return grid;
+}
+
+function createBackgroundGrid(tiles, patterns) {
+    const grid = new Matrix();
+
+    for (const { tile, x, y }
+        of expandTiles(tiles, patterns)) {
+        grid.set(x, y, {
+            name: tile.name,
+        });
+    }
+    return grid;
 }
 
 function* expandSpan(xStart, xLen, yStart, yLen) {
@@ -54,7 +86,9 @@ function* expandRanges(ranges) {
     }
 }
 
-function createTiles(level, tiles, patterns) {
+function expandTiles(tiles, patterns) {
+    const expandedTiles = [];
+
     function walkTiles(tiles, offsetX, offsetY) {
         for (const tile of tiles) {
             for (const { x, y }
@@ -66,9 +100,10 @@ function createTiles(level, tiles, patterns) {
                     const tiles = patterns[tile.pattern].tiles;
                     walkTiles(tiles, derivedX, derivedY);
                 } else {
-                    level.tiles.set(derivedX, derivedY, {
-                        name: tile.name,
-                        type: tile.type
+                    expandedTiles.push({
+                        tile,
+                        x: derivedX,
+                        y: derivedY,
                     });
                 }
             }
@@ -76,4 +111,6 @@ function createTiles(level, tiles, patterns) {
     }
 
     walkTiles(tiles, 0, 0);
+
+    return expandedTiles;
 }
