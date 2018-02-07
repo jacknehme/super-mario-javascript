@@ -2,42 +2,37 @@ import Camera from './Camera.js';
 import Timer from './timer.js';
 import { loadLevel } from './loaders/level.js';
 import { loadMario } from './entities/Mario.js';
+import { loadGoomba } from './entities/Goomba.js';
+import { loadKoopa } from './entities/Koopa.js';
 import { setupKeyboard } from './input.js';
+import { createCollisionLayer } from './layers.js';
 
 const canvas = document.getElementById('screen');
 const context = canvas.getContext('2d');
 
 Promise.all([
     loadMario(),
+    loadGoomba(),
+    loadKoopa(),
     loadLevel('1-1'),
-]).then(([createMario, level]) => {
+]).then(([createMario, createGoomba, createKoopa, level]) => {
 
     const camera = new Camera();
     window.camera = camera;
 
     const mario = createMario();
     mario.pos.set(64, 64);
-
-    // mario.addTrait({
-    //     NAME: 'hacktrait',
-    //     spawnTimeout: 0,
-    //     obstruct() {
-
-    //     },
-    //     update(mario, deltaTime) {
-    //         if (this.spawnTimeout > 0.1 && mario.vel.y < 0) {
-    //             const spawn = createMario();
-    //             spawn.pos.x = mario.pos.x;
-    //             spawn.pos.y = mario.pos.y;
-    //             spawn.vel.y = mario.vel.y - 200;
-    //             level.entities.add(spawn);
-    //             this.spawnTimeout = 0;
-    //         }
-    //         this.spawnTimeout += deltaTime;
-    //     }
-    // });
-
     level.entities.add(mario);
+
+    const goomba = createGoomba();
+    goomba.pos.x = 220;
+    level.entities.add(goomba);
+
+    const koopa = createKoopa();
+    koopa.pos.x = 260;
+    level.entities.add(koopa);
+
+    level.comp.layers.push(createCollisionLayer(level));
 
     const input = setupKeyboard(mario);
     input.listenTo(window);
