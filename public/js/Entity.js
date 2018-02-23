@@ -11,17 +11,22 @@ export const Sides = {
 export class Trait {
     constructor(name) {
         this.NAME = name;
+        this.tasks = [];
     }
 
     collides(us, them) {}
 
-    obstruct() {
-
+    finalize() {
+        this.tasks.forEach(task => task());
+        this.tasks.length = 0;
     }
 
-    update() {
-
+    queue(task) {
+        this.tasks.push(task);
     }
+
+    obstruct() {}
+    update() {}
 }
 
 export default class Entity {
@@ -56,6 +61,12 @@ export default class Entity {
     }
 
     draw() {}
+
+    finalize() {
+        this.traits.forEach(trait => {
+            trait.finalize();
+        });
+    }
 
     update(deltaTime, level) {
         this.traits.forEach(trait => {
