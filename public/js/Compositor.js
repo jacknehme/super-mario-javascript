@@ -1,4 +1,4 @@
-import { createCollisionLayer } from './layers.js';
+import { createCollisionLayer } from './layers/collision.js';
 
 export default class Compositor {
     constructor() {

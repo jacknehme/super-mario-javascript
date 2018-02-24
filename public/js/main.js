@@ -3,9 +3,10 @@ import Entity from './Entity.js';
 import PlayerController from './traits/PlayerController.js';
 import Timer from './timer.js';
 import { createLevelLoader } from './loaders/level.js';
+import { loadFont } from './loaders/font.js';
 import { loadEntities } from './entities.js';
 import { setupKeyboard } from './input.js';
-import { createCollisionLayer } from './layers.js';
+import { createCollisionLayer } from './layers/collision.js';
 
 function createPlayerEnv(playerEntity) {
     const playerEnv = new Entity();
@@ -19,7 +20,7 @@ function createPlayerEnv(playerEntity) {
 async function main(canvas) {
     const context = canvas.getContext('2d');
 
-    const entityFacory = await loadEntities();
+    const [entityFacory, font] = await Promise.all([loadEntities(), loadFont()]);
     const loadLevel = await createLevelLoader(entityFacory);
 
     const level = await loadLevel('1-1');
@@ -44,6 +45,8 @@ async function main(canvas) {
         camera.pos.x = Math.max(0, mario.pos.x - 100);
 
         level.comp.draw(context, camera);
+
+        font.draw('A', context, 0, 0);
     }
     timer.start();
 }
