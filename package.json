@@ -18,6 +18,6 @@
     },
     "homepage": "https://github.com/jacknehme/super-mario-javascript#readme",
     "dependencies": {
-        "serve": "^6.4.1"
+        "serve": "^11.3.0"
     }
 }
